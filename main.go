@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
 )
 
 type account struct {
@@ -9,6 +12,15 @@ type account struct {
 	password  string
 	balance   int
 	statement []string
+}
+
+func EncodingUser(username string, pin string, balance int) string {
+	newUser := account{username, pin, balance, nil}
+	newUserJson, err := json.MarshalIndent(newUser, "", "\t")
+	if err != nil {
+		panic(err)
+	}
+	return string(newUserJson)
 }
 
 var idx int = 0
@@ -69,8 +81,8 @@ func amount_withdraw() {
 	var i int = account_exist(user_id, pass)
 	if account_list[i].balance >= amt {
 		account_list[i].balance = account_list[i].balance - amt
-		// var trans string = string(amt) + " debited.avaible balance " + " " + string(account_list[i].balance)
-		// account_list[i].statement = append(account_list[i].statement, trans)
+		var trans string = strconv.Itoa(amt) + " debited.avaible balance " + " " + strconv.Itoa(account_list[i].balance) + " Time:" + time.Now().String()
+		account_list[i].statement = append(account_list[i].statement, trans)
 		fmt.Println("Transaction Sucessfull")
 	} else {
 		fmt.Println("amount Insufficient.")
@@ -84,7 +96,7 @@ func statement_print() {
 	fmt.Println("Enter Password")
 	fmt.Scanln(&pass)
 	var i = account_exist(user_id, pass)
-	for k := len(account_list[i].statement) - 5; k < len(account_list[i].statement); k++ {
+	for k := 0; k < len(account_list[i].statement); k++ {
 		fmt.Println(account_list[i].statement[k])
 	}
 }
